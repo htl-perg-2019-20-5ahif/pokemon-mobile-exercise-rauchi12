@@ -9,10 +9,24 @@
     <StackLayout>
         <!-- Place new controls here -->
         <Label Text="Pokemon Explorer" 
-           HorizontalOptions="Center"
-           VerticalOptions="CenterAndExpand" />
+               FontSize="Title"
+               HorizontalOptions="Center"
+               VerticalOptions="CenterAndExpand" />
         <Button Text="Load Pokemon" Clicked="Button_Clicked"/>
-        <ListView ItemsSource="{Binding PokemonDetaileds}"/>
+
+        <ListView ItemsSource="{Binding Path=PokemonDetaileds}" ItemTapped="ListView_ItemTappedAsync">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout Orientation="Horizontal" >
+                            <Image Source="{Binding Path=Sprites.ImageFrontUrl}" />
+
+                            <Label Text="{Binding Path=Name}" FontSize="Title" />
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </StackLayout>
 
 </ContentPage>

@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 
 namespace PokemonMobileExercise
 {
@@ -16,22 +17,24 @@ namespace PokemonMobileExercise
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
-        public ObservableCollection<PokemonDetailed> PokemonDetaileds { get; } = new ObservableCollection<PokemonDetailed>();
+        public ObservableCollection<PokemonDetailed> PokemonDetaileds { get; set; }
 
         //****************************
         //  TODO:
         //
-        //  - Abilities Array parsen
-        //  - Use PokemonListPage 
-        //  - Maybe merge Pokemon and Pokemon Detailed
+        //  - Show Sprites on
+        //      - MainPage
+        //      - DetailPage
         //
         //****************************
 
 
-        private static HttpClient HttpClient = new HttpClient();
+        private static readonly HttpClient HttpClient = new HttpClient();
         public MainPage()
         {
             InitializeComponent();
+            PokemonDetaileds = new ObservableCollection<PokemonDetailed>();
+            BindingContext = this;
         }
         public async Task<Pokemons> GetPokemon()
         {
@@ -49,6 +52,7 @@ namespace PokemonMobileExercise
             pokemonResponse.EnsureSuccessStatusCode();
             var responseBody = await pokemonResponse.Content.ReadAsStringAsync();
             var pokemonDetailed = JsonSerializer.Deserialize<PokemonDetailed>(responseBody);
+            pokemonDetailed.Name = pokemon.Name;
             return pokemonDetailed;
         }
 
@@ -59,6 +63,15 @@ namespace PokemonMobileExercise
             {
                 var pokemonDetailed = await GetPokemonDetailed(pokemon);
                 PokemonDetaileds.Add(pokemonDetailed);
+            }
+        }
+
+        public async void ListView_ItemTappedAsync(object sender, ItemTappedEventArgs e)
+        {
+            if (e.Item != null)
+            {
+                var details = e.Item as PokemonDetailed;
+                await Navigation.PushModalAsync(new DetailPage(details));
             }
         }
     }
